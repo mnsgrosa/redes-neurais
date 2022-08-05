@@ -20,6 +20,14 @@ class Activation_Softmax:
         probabilities = exp_values / np.sum(exp_values, axis = 1, keepdims = True)
         self.output = probabilities
 
+    def backward(self, dvalues):
+        self.dinputs = np.empty_like(dvalues)
+
+        for index, (single_output, single_dvalues) in enumerate(zip(self.output, dvalues)):
+            single_output = single_output.reshape(-1, 1)
+            jacobian_matrix = np.diagflat(singe_output) - np.dot(single_output, single_output.T)
+            self.dinputs[index] = np.dot(jacobian_matrix, single_dvalues)
+
 if __name__ == '__main__':
     softmax = Activation_Softmax()
     softmax.forward([[1, 2, 3]])
